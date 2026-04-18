@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChessDSA — Play Chess</title>
+<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body class="landing-body">
+
+<!-- Animated Background -->
+<div class="bg-grid"></div>
+<div class="floating-pieces" id="floatingPieces"></div>
+
+<!-- HEADER -->
+<header class="landing-header">
+  <div class="logo">
+    <span class="logo-icon">♟</span>
+    <span class="logo-text">Chess<span class="accent">DSA</span></span>
+  </div>
+  <nav class="nav-links">
+    <a href="#" class="nav-link">About</a>
+    <a href="#" class="nav-link">Algorithms</a>
+  </nav>
+</header>
+
+<!-- HERO SECTION -->
+<main class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">Powered by C++ Minimax + Alpha-Beta Pruning</div>
+    <h1 class="hero-title">
+      Master the<br>
+      <span class="title-accent">64 Squares</span>
+    </h1>
+    <p class="hero-sub">
+      A full-featured chess engine built with C++ DSA — Minimax trees,
+      Alpha-Beta pruning, Zobrist hashing, and a move stack.
+      Play against adaptive AI or challenge a friend.
+    </p>
+
+    <!-- MAIN BUTTONS -->
+    <div class="hero-buttons">
+      <button class="btn-primary" id="btnBot" onclick="openBotModal()">
+        <span class="btn-icon">🤖</span>
+        <span class="btn-text">
+          <span class="btn-label">Play vs Bot</span>
+          <span class="btn-sub">Adaptive AI opponent</span>
+        </span>
+        <span class="btn-arrow">→</span>
+      </button>
+
+      <button class="btn-secondary" id="btnFriend" onclick="openFriendModal()">
+        <span class="btn-icon">👥</span>
+        <span class="btn-text">
+          <span class="btn-label">Play vs Friend</span>
+          <span class="btn-sub">Local 2-player game</span>
+        </span>
+        <span class="btn-arrow">→</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SHOWCASE BOARD -->
+  <div class="showcase-container">
+    <div class="board-glow"></div>
+    <div class="showcase-board" id="showcaseBoard"></div>
+    <div class="board-labels-files">
+      <span>a</span><span>b</span><span>c</span><span>d</span>
+      <span>e</span><span>f</span><span>g</span><span>h</span>
+    </div>
+    <div class="board-labels-ranks">
+      <span>8</span><span>7</span><span>6</span><span>5</span>
+      <span>4</span><span>3</span><span>2</span><span>1</span>
+    </div>
+  </div>
+</main>
+
+<!-- DSA FEATURES STRIP -->
+<!-- <section class="features-strip">
+  <div class="feature-card">
+    <div class="feature-icon">📚</div>
+    <div class="feature-title">Move Stack</div>
+    <div class="feature-desc">Full undo/redo with a C++ std::stack storing complete state snapshots</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🌳</div>
+    <div class="feature-title">Minimax Tree</div>
+    <div class="feature-desc">Game tree search with Alpha-Beta pruning — O(b^d/2) vs O(b^d)</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">🔑</div>
+    <div class="feature-title">Zobrist Hashing</div>
+    <div class="feature-desc">64-bit position keys for transposition table & draw detection</div>
+  </div>
+  <div class="feature-card">
+    <div class="feature-icon">⚡</div>
+    <div class="feature-title">Move Ordering</div>
+    <div class="feature-desc">MVV-LVA heuristic sorts captures first to maximize pruning</div>
+  </div>
+</section> -->
+
+<!-- ── BOT MODAL ── -->
+<div class="modal-overlay" id="botModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal('botModal')">✕</button>
+    <div class="modal-icon">🤖</div>
+    <h2 class="modal-title">Choose Your Opponent</h2>
+
+    <!-- DIFFICULTY -->
+    <p class="modal-label">Difficulty</p>
+    <div class="difficulty-grid" id="difficultyGrid">
+      <div class="diff-card" data-diff="1" onclick="selectDiff(this)">
+        <div class="diff-name">Beginner</div>
+        <div class="diff-rating">~400</div>
+        <div class="diff-desc">Random moves, learns nothing</div>
+      </div>
+      <div class="diff-card selected" data-diff="2" onclick="selectDiff(this)">
+        <div class="diff-name">Casual</div>
+        <div class="diff-rating">~800</div>
+        <div class="diff-desc">Depth 3 search</div>
+      </div>
+      <div class="diff-card" data-diff="3" onclick="selectDiff(this)">
+        <div class="diff-name">Club Player</div>
+        <div class="diff-rating">~1400</div>
+        <div class="diff-desc">Depth 4 + quiescence</div>
+      </div>
+      <div class="diff-card" data-diff="4" onclick="selectDiff(this)">
+        <div class="diff-name">Master</div>
+        <div class="diff-rating">~1900</div>
+        <div class="diff-desc">Depth 5 + full TT</div>
+      </div>
+    </div>
+
+    <!-- COLOR -->
+    <p class="modal-label" style="margin-top:24px">Your Color</p>
+    <div class="color-grid" id="colorGrid">
+      <div class="color-card selected" data-color="white" onclick="selectColor(this)">
+        <div class="color-king white-king">♔</div>
+        <div class="color-name">White</div>
+        <div class="color-desc">Move first</div>
+      </div>
+      <div class="color-card" data-color="black" onclick="selectColor(this)">
+        <div class="color-king black-king">♚</div>
+        <div class="color-name">Black</div>
+        <div class="color-desc">Bot moves first</div>
+      </div>
+      <div class="color-card" data-color="random" onclick="selectColor(this)">
+        <div class="color-king">🎲</div>
+        <div class="color-name">Random</div>
+        <div class="color-desc">Surprise me</div>
+      </div>
+    </div>
+
+    <button class="btn-start" onclick="startBotGame()">
+      Start Game <span style="margin-left:8px">→</span>
+    </button>
+  </div>
+</div>
+
+<!-- ── FRIEND MODAL ── -->
+<div class="modal-overlay" id="friendModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal('friendModal')">✕</button>
+    <div class="modal-icon">👥</div>
+    <h2 class="modal-title">Local 2-Player Game</h2>
+    <p class="modal-sub">Both players share the same screen. The board will flip after each move.</p>
+
+    <p class="modal-label">Board Orientation</p>
+    <div class="color-grid" id="friendColorGrid">
+      <div class="color-card selected" data-color="white" onclick="selectFriendColor(this)">
+        <div class="color-king white-king">♔</div>
+        <div class="color-name">White starts bottom</div>
+      </div>
+      <div class="color-card" data-color="black" onclick="selectFriendColor(this)">
+        <div class="color-king black-king">♚</div>
+        <div class="color-name">Black starts bottom</div>
+      </div>
+    </div>
+
+    <button class="btn-start" onclick="startFriendGame()">
+      Start Game <span style="margin-left:8px">→</span>
+    </button>
+  </div>
+</div>
+
+<script>
+// ─── SHOWCASE BOARD ───────────────────────────────────────
+const INITIAL = [
+  ['R','N','B','Q','K','B','N','R'],
+  ['P','P','P','P','P','P','P','P'],
+  [' ',' ',' ',' ',' ',' ',' ',' '],
+  [' ',' ',' ',' ',' ',' ',' ',' '],
+  [' ',' ',' ',' ',' ',' ',' ',' '],
+  [' ',' ',' ',' ',' ',' ',' ',' '],
+  ['p','p','p','p','p','p','p','p'],
+  ['r','n','b','q','k','b','n','r']
+];
+const PIECE_UNICODE = {
+  'K':'♔','Q':'♕','R':'♖','B':'♗','N':'♘','P':'♙',
+  'k':'♚','q':'♛','r':'♜','b':'♝','n':'♞','p':'♟'
+};
+
+function renderShowcaseBoard() {
+  const board = document.getElementById('showcaseBoard');
+  board.innerHTML = '';
+  for(let r=0;r<8;r++) {
+    for(let c=0;c<8;c++) {
+      const sq = document.createElement('div');
+      sq.className = 'showcase-sq ' + ((r+c)%2===0?'sq-light':'sq-dark');
+      const piece = INITIAL[r][c];
+      if(piece !== ' ') {
+        const sp = document.createElement('span');
+        sp.className = 'piece ' + (piece === piece.toUpperCase() ? 'piece-white' : 'piece-black');
+        sp.textContent = PIECE_UNICODE[piece] || '';
+        sq.appendChild(sp);
+      }
+      board.appendChild(sq);
+    }
+  }
+}
+renderShowcaseBoard();
+
+// ─── FLOATING PIECES ANIMATION ───────────────────────────
+const PIECES_LIST = ['♟','♜','♞','♝','♛','♚','♙','♖','♘','♗','♕','♔'];
+function spawnFloating() {
+  const container = document.getElementById('floatingPieces');
+  const el = document.createElement('div');
+  el.className = 'fp';
+  el.textContent = PIECES_LIST[Math.floor(Math.random()*PIECES_LIST.length)];
+  el.style.left = Math.random()*100 + 'vw';
+  el.style.animationDuration = (8 + Math.random()*12) + 's';
+  el.style.fontSize = (20 + Math.random()*30) + 'px';
+  el.style.opacity = 0.03 + Math.random()*0.07;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 20000);
+}
+setInterval(spawnFloating, 800);
+for(let i=0;i<8;i++) spawnFloating();
+
+// ─── MODAL LOGIC ─────────────────────────────────────────
+function openBotModal()    { document.getElementById('botModal').classList.add('active'); }
+function openFriendModal() { document.getElementById('friendModal').classList.add('active'); }
+function closeModal(id)    { document.getElementById(id).classList.remove('active'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if(e.target===m) m.classList.remove('active'); });
+});
+
+function selectDiff(el) {
+  document.querySelectorAll('.diff-card').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function selectColor(el) {
+  document.querySelectorAll('#colorGrid .color-card').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function selectFriendColor(el) {
+  document.querySelectorAll('#friendColorGrid .color-card').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function startBotGame() {
+  const diff  = document.querySelector('.diff-card.selected').dataset.diff;
+  let   color = document.querySelector('#colorGrid .color-card.selected').dataset.color;
+  if(color === 'random') color = Math.random() > 0.5 ? 'white' : 'black';
+  window.location.href = `game.html?mode=bot&difficulty=${diff}&playerColor=${color}`;
+}
+function startFriendGame() {
+  const color = document.querySelector('#friendColorGrid .color-card.selected').dataset.color;
+  window.location.href = `game.html?mode=friend&playerColor=${color}`;
+}
+</script>
+</body>
+</html>

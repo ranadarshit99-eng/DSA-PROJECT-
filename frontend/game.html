@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChessDSA — Playing</title>
+<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="game-body">
+
+<!-- BACK BUTTON -->
+<a href="index.html" class="back-btn">← Home</a>
+
+<!-- GAME LAYOUT -->
+<div class="game-layout">
+
+  <!-- LEFT PANEL -->
+  <aside class="panel panel-left">
+    <!-- Opponent info -->
+    <div class="player-card" id="topPlayer">
+      <div class="player-avatar" id="topAvatar">♚</div>
+      <div class="player-info">
+        <div class="player-name" id="topName">Black</div>
+        <div class="player-sub"  id="topSub">Waiting…</div>
+      </div>
+      <div class="player-timer" id="topTimer">—</div>
+    </div>
+
+    <!-- Captured pieces -->
+    <div class="captured-section">
+      <div class="captured-row" id="topCaptured"></div>
+      <div class="material-badge" id="topMaterial"></div>
+    </div>
+
+    <!-- BOARD WRAPPER -->
+    <div class="board-wrapper">
+      <div class="coord-ranks" id="rankLabels"></div>
+      <div class="chess-board" id="chessBoard"></div>
+      <div class="coord-files" id="fileLabels"></div>
+    </div>
+
+    <!-- Bottom player captures -->
+    <div class="captured-section">
+      <div class="captured-row" id="bottomCaptured"></div>
+      <div class="material-badge" id="bottomMaterial"></div>
+    </div>
+
+    <!-- Me info -->
+    <div class="player-card" id="bottomPlayer">
+      <div class="player-avatar" id="bottomAvatar">♔</div>
+      <div class="player-info">
+        <div class="player-name" id="bottomName">You</div>
+        <div class="player-sub"  id="bottomSub">White · Move first</div>
+      </div>
+      <div class="player-timer" id="bottomTimer">—</div>
+    </div>
+  </aside>
+
+  <!-- RIGHT PANEL -->
+  <aside class="panel panel-right">
+    <!-- Game title -->
+    <div class="game-header-right">
+      <span class="logo-small">♟ ChessDSA</span>
+      <div class="mode-badge" id="modeBadge">vs Bot</div>
+    </div>
+
+    <!-- Status bar -->
+    <div class="status-bar" id="statusBar">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Setting up…</span>
+    </div>
+
+    <!-- Move list (PGN style) -->
+    <div class="move-list-header">
+      <span>Moves</span>
+      <span class="move-count" id="moveCount">0</span>
+    </div>
+    <div class="move-list" id="moveList"></div>
+
+    <!-- Controls -->
+    <div class="game-controls">
+      <button class="ctrl-btn" id="btnUndo" onclick="requestUndo()" title="Undo">
+        ↩ Undo
+      </button>
+      <button class="ctrl-btn" id="btnFlip" onclick="flipBoard()" title="Flip Board">
+        ⇅ Flip
+      </button>
+      <button class="ctrl-btn danger" onclick="resignGame()" title="Resign">
+        🏳 Resign
+      </button>
+      <button class="ctrl-btn" onclick="newGame()" title="New Game">
+        ↺ New Game
+      </button>
+    </div>
+
+    <!-- DSA Info Panel -->
+    <div class="dsa-panel">
+      <div class="dsa-title">🧠 Engine Info</div>
+      <div class="dsa-row"><span>Algorithm</span><span class="dsa-val">Minimax + α-β</span></div>
+      <div class="dsa-row"><span>Depth</span>    <span class="dsa-val" id="dsaDepth">—</span></div>
+      <!-- <div class="dsa-row"><span>Nodes/s</span>  <span class="dsa-val" id="dsaNodes">—</span></div> -->
+      <!-- <div class="dsa-row"><span>TT hits</span>  <span class="dsa-val" id="dsaTT">—</span></div> -->
+      <div class="dsa-row"><span>Move stack</span><span class="dsa-val" id="dsaStack">0</span></div>
+    </div>
+  </aside>
+</div>
+
+<!-- PROMOTION MODAL -->
+<div class="modal-overlay" id="promoModal">
+  <div class="promo-card">
+    <h3>Promote Pawn</h3>
+    <div class="promo-options" id="promoOptions"></div>
+  </div>
+</div>
+
+<!-- GAME OVER MODAL -->
+<div class="modal-overlay" id="gameOverModal">
+  <div class="modal-card">
+    <div class="modal-icon" id="goIcon">🏆</div>
+    <h2 class="modal-title" id="goTitle">Game Over</h2>
+    <p  class="modal-sub"   id="goSub">—</p>
+    <div style="display:flex;gap:12px;justify-content:center;margin-top:24px">
+      <button class="btn-start" onclick="newGame()">↺ Play Again</button>
+      <button class="btn-secondary-sm" onclick="window.location.href='index.html'">🏠 Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- THINKING OVERLAY -->
+<div class="thinking-overlay" id="thinkingOverlay">
+  <div class="thinking-dots">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="thinking-text">Engine thinking…</div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/board.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
