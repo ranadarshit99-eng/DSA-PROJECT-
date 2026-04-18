@@ -1,16 +1,3 @@
-from flask import Flask, send_from_directory
-import os
-
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return send_from_directory('frontend', 'index.html')
-
-port = int(os.environ.get("PORT", 3000))
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=port)
     """
 ChessDSA — Optimized Python Chess Engine + HTTP Server
 Fixes: checkmate logic, illegal move handling, 3x-10x speed improvement
